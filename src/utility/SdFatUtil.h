@@ -34,20 +34,31 @@
 #endif
 #define NOINLINE __attribute__((noinline,unused))
 #define UNUSEDOK __attribute__((unused))
+
+#if UINTPTR_MAX == 0xFFFF
+typedef int16_t ptr_as_int;
+#elif UINTPTR_MAX == 0xFFFFFFFF
+typedef int32_t ptr_as_int;
+#elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu
+typedef int64_t ptr_as_int;
+#else
+#error unrecognized pointer size!
+#endif
+
 //------------------------------------------------------------------------------
 /** Return the number of bytes currently free in RAM. */
 static UNUSEDOK int FreeRam(void) {
   extern int  __bss_end;
   extern int* __brkval;
   int free_memory;
-  if (reinterpret_cast<int>(__brkval) == 0) {
+  if (reinterpret_cast<ptr_as_int>(__brkval) == 0) {
     // if no heap use from end of bss section
-    free_memory = reinterpret_cast<int>(&free_memory)
-                  - reinterpret_cast<int>(&__bss_end);
+    free_memory = reinterpret_cast<ptr_as_int>(&free_memory)
+                  - reinterpret_cast<ptr_as_int>(&__bss_end);
   } else {
     // use from top of stack to heap
-    free_memory = reinterpret_cast<int>(&free_memory)
-                  - reinterpret_cast<int>(__brkval);
+    free_memory = reinterpret_cast<ptr_as_int>(&free_memory)
+                  - reinterpret_cast<ptr_as_int>(__brkval);
   }
   return free_memory;
 }
