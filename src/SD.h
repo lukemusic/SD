@@ -53,7 +53,7 @@ namespace SDLib {
       void rewindDirectory(void);
 
       using Print::write;
-#ifdef ARDUINO_CI
+#ifdef MOCK_PINS_COUNT
       int getWriteError() { return writeError; }
       void setWriteError(int value = 1) { writeError = value; }
       void clearWriteError() { writeError = 0; }

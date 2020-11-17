@@ -18,20 +18,9 @@
    <http://www.gnu.org/licenses/>.
 */
 
-#ifdef ARDUINO_CI
-  #include <inttypes.h>
-  #ifdef _SFR_IO8
-    #undef _SFR_IO8
-    #define _AVR_IO_REG(type, mem_addr) (*(type*)(&avr_io_registers[mem_addr]))
-    #define __SFR_OFFSET 0x20
-    #define _SFR_IO8(io_addr) _AVR_IO_REG(uint8_t, io_addr + __SFR_OFFSET)
-    #define _SFR_IO16(io_addr) _AVR_IO_REG(uint16_t, io_addr + __SFR_OFFSET)
-    #define _SFR_MEM8(mem_addr) _AVR_IO_REG(uint8_t, mem_addr)
-    #define _SFR_MEM16(mem_addr) _AVR_IO_REG(uint16_t, mem_addr)
-    #define _SFR_MEM32(mem_addr) _AVR_IO_REG(uint32_t, mem_addr)
+#include <Arduino.h>
 
-    extern uint8_t avr_io_registers[RAMSTART];
-  #endif
+#ifdef MOCK_PINS_COUNT
   #define SDCARD_SS_PIN    4
   #define SDCARD_MOSI_PIN 11
   #define SDCARD_MISO_PIN 12
@@ -58,6 +47,13 @@
   #define Sd2PinMap_h
 
   #include <Arduino.h>
+
+  #ifdef MOCK_PINS_COUNT
+    #define SDCARD_SS_PIN    4
+    #define SDCARD_MOSI_PIN 11
+    #define SDCARD_MISO_PIN 12
+    #define SDCARD_SCK_PIN  13
+  #endif
 
   uint8_t const SS_PIN = SS;
   uint8_t const MOSI_PIN = MOSI;
