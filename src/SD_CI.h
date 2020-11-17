@@ -1,17 +1,29 @@
 #pragma once
 #include <SD.h>
+#include "globals.h"
+#include <filesystem>
+#include <fstream>
 #ifdef ARDUINO_CI
+
+namespace fs = std::filesystem;
 
 namespace SDLib {
 
 class File_CI : public File_Base {
 private:
   char _name[13]; // our name
-  SdFile *_file;  // underlying file pointer
+                  //   File_Base *baseFile;
+                  // need a local file reference HERE
+  std::ofstream *fout;
+  std::ifstream *fin;
+  char *_fileName;
+  uint8_t _mode;
+  bool _open;
 
 public:
-  File(SdFile f, const char *name); // wraps an underlying SdFile
-  File(void);                       // 'empty' constructor
+  File_CI(File_Base *baseFile);
+  File_CI(SdFile f, const char *name); // wraps an underlying SdFile
+  File_CI(void);                       // 'empty' constructor
   virtual size_t write(uint8_t);
   virtual size_t write(const uint8_t *buf, size_t size);
   virtual int availableForWrite();
@@ -32,7 +44,7 @@ public:
   void rewindDirectory(void);
 
   using Print::write;
-// testing functions
+  // testing functions
   int getWriteError() { return writeError; }
   void setWriteError(int value = 1) { writeError = value; }
   void clearWriteError() { writeError = 0; }
@@ -58,8 +70,8 @@ public:
   // Open the specified file/directory with the supplied mode (e.g. read or
   // write, etc). Returns a File object for interacting with the file.
   // Note that currently only one file can be open at a time.
-  File_CI open(const char *filename, uint8_t mode = FILE_READ);
-  File_CI open(const String &filename, uint8_t mode = FILE_READ) {
+  File_CI open(const char *filename, uint8_t mode);
+  File_CI open(const String &filename, uint8_t mode = O_READ) {
     return open(filename.c_str(), mode);
   }
 
@@ -86,6 +98,8 @@ public:
 private:
   friend class File;
 };
+
+extern SDClass_CI sd_ci;
 
 } // namespace SDLib
 
