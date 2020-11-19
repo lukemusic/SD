@@ -26,7 +26,7 @@ bool SDClass_CI::begin(uint32_t clock, uint8_t csPin) {
 void SDClass_CI::end() { SDClass_Base::end(); }
 
 File_CI SDClass_CI::open(const char *filename, uint8_t mode) {
-  SDClass_Base::open(filename, mode);
+  return File_CI(filename, mode);
 }
 
 bool SDClass_CI::exists(const char *filepath) {
@@ -82,15 +82,6 @@ bool SDClass_CI::rmdir(const char *filepath) {
 
   return fs::remove_all(newPath);
 }
-
-// File_CI SDClass_CI::open(const char *filename, uint8_t mode = O_READ) {
-//   // prepend base file path
-//   char newPath[100];
-//   strcpy(newPath, BASE_PATH);
-//   strcat(newPath, filename);
-
-//   return File_CI(filename, mode);
-// }
 
 SDClass_CI sd_ci;
 

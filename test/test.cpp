@@ -24,10 +24,6 @@ unittest(mkdir_works) {
   assertTrue(sd_ci.exists("test_directory/a/c"));
 }
 
-unittest(remove_works) {
-
-}
-
 unittest(rmdir_works) {
   assertTrue(sd_ci.rmdir("test_directory/a/b"));
   assertFalse(sd_ci.exists("test_directory/a/b"));
@@ -35,8 +31,38 @@ unittest(rmdir_works) {
   assertFalse(sd_ci.exists("test_directory"));
 }
 
-unittest(open_works) {
+File_CI testFile = sd_ci.open("hello.txt", O_WRITE);
+unittest(open_works) { assertTrue(sd_ci.exists("hello.txt")); }
 
+unittest(name_works) {
+  char name[100] = "hello.txt";
+  assertEqual(*name, *testFile.name());
 }
+
+unittest(close_works) {
+  testFile.close();
+  assertFalse(testFile.isOpen());
+}
+
+unittest(remove_works) {
+  testFile.close();
+  sd_ci.remove("hello.txt");
+  assertFalse(sd_ci.exists("hello.txt"));
+}
+
+unittest(write_works) {
+  sd_ci.remove("write.txt");
+  File_CI writeFile = sd_ci.open("write.txt", O_WRITE);
+  char toWrite[100] = "How much wood could a wood pecker peck?\n";
+  writeFile.write(toWrite, sizeof(toWrite));
+}
+
+// unittest(size_works) {
+//   sd_ci.remove("size.txt");
+//   File_CI sizeFile = sd_ci.open("size.txt", O_WRITE);
+//   sizeFile.write1("This is a file with some text in it for testing.");
+//   uint32_t fileSize = sizeFile.size();
+//   assertEqual(49, fileSize);
+// }
 
 unittest_main()

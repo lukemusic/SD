@@ -1,6 +1,6 @@
 #pragma once
-#include <SD.h>
 #include "globals.h"
+#include <SD.h>
 #include <filesystem>
 #include <fstream>
 #ifdef ARDUINO_CI
@@ -14,18 +14,20 @@ private:
   char _name[13]; // our name
                   //   File_Base *baseFile;
                   // need a local file reference HERE
-  std::ofstream *fout;
+  std::fstream *finOut;
   std::ifstream *fin;
   char *_fileName;
   uint8_t _mode;
   bool _open;
 
 public:
-  File_CI(File_Base *baseFile);
-  File_CI(SdFile f, const char *name); // wraps an underlying SdFile
-  File_CI(void);                       // 'empty' constructor
-  virtual size_t write(uint8_t);
-  virtual size_t write(const uint8_t *buf, size_t size);
+  // File_CI(File_Base *baseFile);
+  // File_CI(SdFile f, const char *name); // wraps an underlying SdFile
+  // File_CI(void);                       // 'empty' constructor
+  File_CI(const char *name, uint8_t mode);
+  ~File_CI();
+  // template <class T> size_t write1(T data);
+  virtual size_t write(const char *buf, size_t size);
   virtual int availableForWrite();
   virtual int read();
   virtual int peek();
@@ -38,6 +40,7 @@ public:
   void close();
   operator bool();
   char *name();
+  bool isOpen() { return _open; }
 
   bool isDirectory(void);
   File_CI openNextFile(uint8_t mode = O_RDONLY);
@@ -56,7 +59,6 @@ private:
 class SDClass_CI : public SDClass_Base {
 
 private:
-
 public:
   // This needs to be called to set up the connection to the SD card
   // before other methods are used.
@@ -102,5 +104,19 @@ private:
 extern SDClass_CI sd_ci;
 
 } // namespace SDLib
+
+// Template function definitions
+
+// template <class T> size_t File_CI::write1(T data) {
+//   // return 0 if file is read only
+//   if (_mode == O_READ) {
+//     std::cout << "In read return for some reason" << std::endl;
+//     return 0;
+//   }
+
+//   std::cout << "About to write" << std::endl;
+//   finOut->write(data, sizeof(data));
+//   return sizeof(data);
+// }
 
 #endif
