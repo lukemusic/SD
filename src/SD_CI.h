@@ -16,7 +16,7 @@ private:
                   // need a local file reference HERE
   std::fstream *finOut;
   std::ifstream *fin;
-  char *_fileName;
+  char _fileName[100];
   uint8_t _mode;
   bool _open;
 

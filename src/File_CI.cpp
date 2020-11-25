@@ -17,30 +17,38 @@ namespace SDLib {
 // File_CI::File_CI(void) : File_Base() {}
 
 File_CI::File_CI(const char *name, uint8_t mode) {
+  std::cout << "file object created" << std::endl;
   // prepend base file path
   char newPath[100];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, name);
-
+  std::cout << "string length: " << strlen(newPath) << std::endl;
+  std::cout << '\"' << newPath << '\"' << std::endl;
   if (mode == O_READ) {
     fin = new std::ifstream;
     fin->open(newPath, std::ios::binary | std::ios::in);
+    std::cout << "fin open: " << fin->is_open() << std::endl;
   } else {
     // mode == O_WRITE
     finOut = new std::fstream;
     finOut->open(newPath, std::ios::binary | std::ios::ate | std::ios::out);
+    std::cout << "finOut open: " << finOut->is_open() << std::endl;
   }
 
   _mode = mode;
-  _fileName = new char[100];
   strcpy(_fileName, name);
   _open = true;
 }
 
 File_CI::~File_CI() {
-  delete finOut;
-  delete fin;
-  delete _fileName;
+  std::cout << "file object about to be deleted" << std::endl;
+  if (finOut) {
+    delete finOut;
+  }
+  if (fin) {
+    delete fin;
+  }
+  std::cout << "file object deleted" << std::endl;
 }
 
 // size_t File_CI::write(uint8_t value) { return File_Base::write(value); }
