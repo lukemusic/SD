@@ -16,6 +16,7 @@ private:
                   // need a local file reference HERE
   std::fstream *finOut;
   std::ifstream *fin;
+  int _pos;
   char _fileName[100];
   uint8_t _mode;
   bool _open;
@@ -29,11 +30,10 @@ public:
   // template <class T> size_t write1(T data);
   virtual size_t write(const char *buf, size_t size);
   virtual int availableForWrite();
-  virtual int read();
   virtual int peek();
   virtual int available();
   virtual void flush();
-  int read(void *buf, uint16_t nbyte);
+  int read(char *buf, size_t size);
   bool seek(uint32_t pos);
   uint32_t position();
   uint32_t size();
