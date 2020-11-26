@@ -20,6 +20,7 @@ private:
   char _fileName[100];
   uint8_t _mode;
   bool _open;
+  bool _isDirectory;
 
 public:
   // File_CI(File_Base *baseFile);

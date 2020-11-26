@@ -234,6 +234,22 @@ unittest(peek_works) {
   sd_ci.remove("peek.txt");
 }
 
+unittest(position_works) {
+  // set up
+  File_CI posFile = sd_ci.open("pos.txt", O_WRITE);
+  char toWrite[] = "This is the position file.\n";
+  posFile.write(toWrite, sizeof(toWrite) - 1);
+
+  // test
+  assertEqual(27, posFile.position());
+  posFile.seek(5);
+  assertEqual(5, posFile.position());
+  posFile.close();
+
+  // tear down
+  sd_ci.remove("pos.txt");
+}
+
 
 unittest_main()
 
@@ -244,5 +260,10 @@ Issues
    binary giberisth at the end.
 2. Can't read from write file even though it's
    fstream and not exclusively ofstream
+3. Can't implement isDirectory() because File object
+   will never be a directory... it's just not set up
+   that way and I'm not sure how to set it up that
+   way. I could implement isDirectory() as a member of
+   SDClass_CI... maybe.
 
 */

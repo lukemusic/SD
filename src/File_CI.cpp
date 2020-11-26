@@ -5,6 +5,8 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
+#include <cassert>
+// #include <vector>
 
 namespace SDLib {
 
@@ -16,10 +18,13 @@ namespace SDLib {
 
 // File_CI::File_CI(void) : File_Base() {}
 
-File_CI::File_CI(const char *name, uint8_t mode) {
+File_CI::File_CI(const char *name, uint8_t mode = FILE_READ) {
   _mode = mode;
   strcpy(_fileName, name);
-  
+  // does path exist?
+    // if so, is it a directory?
+      // if so, return a new object with the _isDirectory flag set
+
   // std::cout << "file object created" << std::endl;
   // prepend base file path
   char newPath[100];
@@ -27,17 +32,17 @@ File_CI::File_CI(const char *name, uint8_t mode) {
   strcat(newPath, name);
   // std::cout << "string length: " << strlen(newPath) << std::endl;
   // std::cout << '\"' << newPath << '\"' << std::endl;
-  if (mode == O_READ) {
+  if (mode == FILE_READ) {
     fin = new std::ifstream;
     fin->open(newPath, std::ios::binary | std::ios::in);
     // std::cout << "fin open: " << fin->is_open() << std::endl;
     if (fin->fail()) {
       switch (errno) {
-        case ENOENT:
-          std::cout << "Could not find this file" << std::endl;
-          break;
-        default:
-          perror("opening data file");
+      case ENOENT:
+        std::cout << "Could not find this file" << std::endl;
+        break;
+      default:
+        perror("opening data file");
       }
       _open = false;
     } else {
@@ -65,7 +70,7 @@ File_CI::~File_CI() {
   if (_mode == O_WRITE) {
     delete finOut;
   }
-  if (_mode == O_READ) {
+  if (_mode == FILE_READ) {
     delete fin;
   }
   // std::cout << "file object deleted" << std::endl;
@@ -77,17 +82,13 @@ size_t File_CI::write(const char *buf, size_t size) {
   char newPath[100];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _fileName);
-  
-  if (_mode == O_WRITE) {
-    _pos = fs::file_size(newPath);
-    finOut->seekg(_pos);
-    finOut->write(buf, size);
-    _pos = finOut->tellg();
-    return size;
-  } else {
-    std::cout << "Error: file is read-only" << std::endl;
-    return 0;
-  }
+
+  assert(_mode == O_WRITE);
+  _pos = fs::file_size(newPath);
+  finOut->seekg(_pos);
+  finOut->write(buf, size);
+  _pos = finOut->tellg();
+  return size;
 }
 
 int File_CI::availableForWrite() { return File_Base::availableForWrite(); }
@@ -97,7 +98,7 @@ int File_CI::read(char *buf, size_t size) {
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _fileName);
 
-  if (_mode == O_READ) {
+  if (_mode == FILE_READ) {
     fin->seekg(_pos);
     fin->read(buf, size);
     _pos = fin->tellg();
@@ -112,7 +113,7 @@ int File_CI::read(char *buf, size_t size) {
 
 int File_CI::peek() {
   char byte[1];
-  if(_mode == O_READ) {
+  if (_mode == FILE_READ) {
     fin->seekg(_pos);
     fin->read(byte, 1);
     // put file pointer back
@@ -134,15 +135,15 @@ void File_CI::flush() { return File_Base::flush(); }
 
 bool File_CI::seek(uint32_t pos) {
   _pos = pos;
-  if (_mode == O_READ) {
+  if (_mode == FILE_READ) {
     fin->seekg(pos);
-  } else{
+  } else {
     finOut->seekg(pos);
   }
   return true;
 }
 
-uint32_t File_CI::position() { return File_Base::position(); }
+uint32_t File_CI::position() { return _pos; }
 
 uint32_t File_CI::size() {
   // prepend base file path
@@ -154,7 +155,7 @@ uint32_t File_CI::size() {
 
 void File_CI::close() {
   // read mode
-  if (_mode == O_READ) {
+  if (_mode == FILE_READ) {
     fin->close();
   } else {
     // write mode
@@ -163,9 +164,15 @@ void File_CI::close() {
   _open = false;
 }
 
-File_CI::operator bool() { return File_Base::operator bool(); }
+// File_CI File_CI::openNextFile(uint8_t mode) {
+//   // std::vector<std::string> fileNames;
+
+//   return File_CI("dummy.txt", FILE_READ);
+// }
 
 char *File_CI::name() { return _fileName; }
+
+File_CI::operator bool() { return File_Base::operator bool(); }
 
 bool File_CI::isDirectory(void) { return File_Base::isDirectory(); }
 
