@@ -23,6 +23,9 @@
    \file
    SdFile and SdVolume classes
 */
+
+#include <Arduino.h>
+
 #if defined (__AVR__) || defined (__CPU_ARC__)
   #include <avr/pgmspace.h>
 #endif
@@ -454,7 +457,7 @@ class SdFile : public Print {
     static uint8_t make83Name(const char* str, uint8_t* name);
     uint8_t openCachedEntry(uint8_t cacheIndex, uint8_t oflags);
     dir_t* readDirCache(void);
-#ifdef ARDUINO_CI
+#ifdef MOCK_PINS_COUNT
     int writeError;
   public:
     int getWriteError() { return writeError; }
