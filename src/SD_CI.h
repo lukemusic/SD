@@ -102,18 +102,4 @@ extern SDClass_CI sd_ci;
 
 } // namespace SDLib
 
-// Template function definitions
-
-// template <class T> size_t File_CI::write1(T data) {
-//   // return 0 if file is read only
-//   if (_mode == FILE_READ) {
-//     std::cout << "In read return for some reason" << std::endl;
-//     return 0;
-//   }
-
-//   std::cout << "About to write" << std::endl;
-//   finOut->write(data, sizeof(data));
-//   return sizeof(data);
-// }
-
 #endif

@@ -209,7 +209,7 @@ uint32_t File_CI::size() {
   if (_isDirectory) {
     assert(false);
   }
-  
+
   // prepend base file path
   char newPath[100];
   strcpy(newPath, BASE_PATH);

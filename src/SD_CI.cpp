@@ -19,12 +19,10 @@ void File_CI::rewindDirectory(void) {
 
 bool SDClass_CI::begin(uint8_t csPin) {
   // return SDClass_Base::begin(csPin);
-  std::cout << "bool SDClass_CI::begin(uint8_t csPin)" << std::endl;
 }
 
 bool SDClass_CI::begin(uint32_t clock, uint8_t csPin) {
   // return SDClass_Base::begin(clock, csPin);
-  std::cout << "bool SDClass_CI::begin(uint32_t clock, uint8_t csPin)" << std::endl;
 }
 
 void SDClass_CI::end() {

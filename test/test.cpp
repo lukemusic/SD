@@ -185,7 +185,8 @@ unittest(write_works) {
   char toRead2[size2 + 1];
   readWrite2.read(toRead2, size2);
   toRead2[size] = '\0';
-  char expected2[] = "How much wood could a wood pecker peck?\nA lot of wood.\n";
+  char expected2[] =
+      "How much wood could a wood pecker peck?\nA lot of wood.\n";
   // assertEqual(expected2, toRead2);
   readWrite2.close();
 
@@ -247,20 +248,25 @@ unittest(position_works) {
   sd_ci.remove("pos.txt");
 }
 
+unittest(isDirectory_works) {
+  // set up
+  sd_ci.mkdir("test");
+  File_CI toRead = sd_ci.open("read.txt", FILE_WRITE);
+  toRead.close();
+  File_CI testFile = sd_ci.open("test.txt", FILE_WRITE);
+  File_CI readFile = sd_ci.open("read.txt", FILE_READ);
 
+  // test
+  File_CI myDir = sd_ci.open("test");
+  assertTrue(myDir.isDirectory());
+  assertFalse(testFile.isDirectory());
+  assertFalse(readFile.isDirectory());
+
+  // tear down
+  testFile.close();
+  readFile.close();
+  sd_ci.remove("test.txt");
+  sd_ci.remove("read.txt");
+  sd_ci.rmdir("test");
+}
 unittest_main()
-
-
-/*
-Issues
-1. Can't read from appended file. It adds some
-   binary giberisth at the end.
-2. Can't read from write file even though it's
-   fstream and not exclusively ofstream
-3. Can't implement isDirectory() because File object
-   will never be a directory... it's just not set up
-   that way and I'm not sure how to set it up that
-   way. I could implement isDirectory() as a member of
-   SDClass_CI... maybe.
-
-*/
