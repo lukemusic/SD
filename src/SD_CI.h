@@ -1,19 +1,22 @@
 #pragma once
-#include "globals.h"
+#include <Arduino.h>
+#ifdef MOCK_PINS_COUNT
 #include <SD.h>
 #include <filesystem>
 #include <fstream>
-#ifdef ARDUINO_CI
 
 namespace fs = std::filesystem;
 
 namespace SDLib {
 
+#define BASE_PATH "fileSystem/"
+#define FILE_PATH_SIZE 255
+
 class File_CI : public File_Base {
 private:
   std::fstream *finOut;
   // int _pos;
-  char _path[100];
+  char _path[FILE_PATH_SIZE];
   uint8_t _mode;
   bool _open;
   bool _isDirectory;
@@ -90,9 +93,7 @@ public:
   bool rmdir(const char *filepath);
   bool rmdir(const String &filepath) { return rmdir(filepath.c_str()); }
 
-#ifdef ARDUINO_CI
   virtual String className() const { return "SDClass_Base"; }
-#endif
 
 private:
   friend class File;
