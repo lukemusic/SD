@@ -17,7 +17,7 @@
 
 #include <Arduino.h>
 
-#ifdef ARDUINO_CI
+#ifdef MOCK_PINS_COUNT
 #define SDClass_CI SDClass
 #define File_CI File
 #include <WString.h>
@@ -63,7 +63,7 @@ public:
 
   using Print::write;
 
-#ifdef ARDUINO_CI
+#ifdef MOCK_PINS_COUNT
   virtual String className() const { return "File_Base"; }
 #endif
 };
@@ -113,7 +113,7 @@ public:
   bool rmdir(const char *filepath);
   bool rmdir(const String &filepath) { return rmdir(filepath.c_str()); }
 
-#ifdef ARDUINO_CI
+#ifdef MOCK_PINS_COUNT
   virtual String className() const { return "SDClass_Base"; }
 #endif
 
