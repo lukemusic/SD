@@ -68,39 +68,6 @@ File_CI::File_CI(const char *name, uint8_t mode = FILE_READ) {
       assert(false);
     }
   }
-  // if (mode == FILE_READ) {
-  //   fin = new std::ifstream;
-  //   fin->open(newPath, std::fstream::binary | std::fstream::in);
-  //   // std::cout << "fin open: " << fin->is_open() << std::endl;
-  //   if (fin->fail()) {
-  //     switch (errno) {
-  //     case ENOENT:
-  //       std::cout << "Could not find this file" << std::endl;
-  //       break;
-  //     default:
-  //       perror("opening data file");
-  //     }
-  //     _open = false;
-  //   } else {
-  //     _open = true;
-  //     _pos = 0;
-  //   }
-  // } else {
-  //   // mode == FILE_WRITE
-  //   finOut = new std::fstream;
-  //   // file already exists, get size
-  //   if (fs::exists(newPath)) {
-  //     _pos = 0;
-  //     finOut->open(newPath);
-  //   } else {
-  //     _pos = 0;
-  //     finOut->open(newPath, std::fstream::binary | std::fstream::in |
-  //                               std::fstream::out | std::fstream::app);
-  //     std::cout << "tellg() in write constructor: " << finOut->tellg() <<
-  //     std::endl;
-  //   }
-  //   _open = true;
-  // }
 }
 
 File_CI::~File_CI() {
@@ -115,6 +82,11 @@ File_CI::~File_CI() {
 // }
 
 size_t File_CI::write(const char *buf, size_t size) {
+  // halt if file is directory
+  if (_isDirectory) {
+    assert(false);
+  }
+
   char newPath[100];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _path);
@@ -138,6 +110,11 @@ int File_CI::availableForWrite() {
    this function is used.
 */
 int File_CI::read(char *buf, size_t size) {
+  // halt if file is directory
+  if (_isDirectory) {
+    assert(false);
+  }
+
   char newPath[100];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _path);
@@ -154,6 +131,11 @@ int File_CI::read(char *buf, size_t size) {
 }
 
 int File_CI::peek() {
+  // halt if file is directory
+  if (_isDirectory) {
+    assert(false);
+  }
+
   char byte[2];
   // save old pointer position
   fpos_t oldPos = finOut->tellg();
@@ -172,6 +154,11 @@ int File_CI::peek() {
 }
 
 int File_CI::available() {
+  // halt if file is directory
+  if (_isDirectory) {
+    assert(false);
+  }
+
   // prepend base file path
   char newPath[100];
   strcpy(newPath, BASE_PATH);
@@ -180,9 +167,16 @@ int File_CI::available() {
   return fs::file_size(newPath);
 }
 
-void File_CI::flush() { return File_Base::flush(); }
+void File_CI::flush() {
+  // return File_Base::flush();
+}
 
 bool File_CI::seek(uint32_t pos) {
+  // halt if file is directory
+  if (_isDirectory) {
+    assert(false);
+  }
+
   char newPath[100];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _path);
@@ -201,9 +195,21 @@ bool File_CI::seek(uint32_t pos) {
   return false;
 }
 
-uint32_t File_CI::position() { return finOut->tellg(); }
+uint32_t File_CI::position() {
+  // halt if file is directory
+  if (_isDirectory) {
+    assert(false);
+  }
+
+  return finOut->tellg();
+}
 
 uint32_t File_CI::size() {
+  // halt if file is directory
+  if (_isDirectory) {
+    assert(false);
+  }
+  
   // prepend base file path
   char newPath[100];
   strcpy(newPath, BASE_PATH);
