@@ -1,6 +1,6 @@
+#include <Arduino.h>
+#ifdef MOCK_PINS_COUNT
 #include "SD_CI.h"
-#include "globals.h"
-#ifdef ARDUINO_CI
 
 #include <cassert>
 #include <inttypes.h>
@@ -23,7 +23,7 @@ File_CI::File_CI(const char *name, uint8_t mode = FILE_READ) {
   strcpy(_path, name);
 
   // prepend base path
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, name);
 
@@ -87,7 +87,7 @@ size_t File_CI::write(const char *buf, size_t size) {
     assert(false);
   }
 
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _path);
 
@@ -115,7 +115,7 @@ int File_CI::read(char *buf, size_t size) {
     assert(false);
   }
 
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _path);
 
@@ -160,7 +160,7 @@ int File_CI::available() {
   }
 
   // prepend base file path
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _path);
 
@@ -177,7 +177,7 @@ bool File_CI::seek(uint32_t pos) {
     assert(false);
   }
 
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _path);
 
@@ -211,7 +211,7 @@ uint32_t File_CI::size() {
   }
 
   // prepend base file path
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, _path);
   return fs::file_size(newPath);
