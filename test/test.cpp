@@ -7,7 +7,6 @@ bundle exec arduino_ci.rb  --skip-unittests
 #include "Arduino.h"
 #include "ArduinoUnitTests.h"
 #include "SD_CI.h"
-#include "globals.h"
 #include <fstream>
 
 unittest(exists_works) {
