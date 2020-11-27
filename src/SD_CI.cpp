@@ -1,5 +1,6 @@
+#include <Arduino.h>
+#ifdef MOCK_PINS_COUNT
 #include "SD_CI.h"
-#ifdef ARDUINO_CI
 
 #include <filesystem>
 #include <fstream>
@@ -35,7 +36,7 @@ File_CI SDClass_CI::open(const char *filename, uint8_t mode) {
 
 bool SDClass_CI::exists(const char *filepath) {
   // prepend base file path
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, filepath);
 
@@ -44,7 +45,7 @@ bool SDClass_CI::exists(const char *filepath) {
 
 bool SDClass_CI::mkdir(const char *filepath) {
   // prepend base file path
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, filepath);
 
@@ -71,7 +72,7 @@ bool SDClass_CI::mkdir(const char *filepath) {
 
 bool SDClass_CI::remove(const char *filepath) {
   // prepend base file path
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, filepath);
 
@@ -80,7 +81,7 @@ bool SDClass_CI::remove(const char *filepath) {
 
 bool SDClass_CI::rmdir(const char *filepath) {
   // prepend base file path
-  char newPath[100];
+  char newPath[FILE_PATH_SIZE];
   strcpy(newPath, BASE_PATH);
   strcat(newPath, filepath);
 
