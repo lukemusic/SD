@@ -59,6 +59,13 @@
 
   #include <Arduino.h>
 
+  #ifdef MOCK_PINS_COUNT
+    #define SDCARD_SS_PIN    4
+    #define SDCARD_MOSI_PIN 11
+    #define SDCARD_MISO_PIN 12
+    #define SDCARD_SCK_PIN  13
+  #endif
+
   uint8_t const SS_PIN = SS;
   uint8_t const MOSI_PIN = MOSI;
   uint8_t const MISO_PIN = MISO;
