@@ -11,19 +11,25 @@
 
 namespace SDLib {
 
-File_CI File_CI::openNextFile(uint8_t mode) { File_Base::openNextFile(mode); }
-
-void File_CI::rewindDirectory(void) { File_Base::rewindDirectory(); }
+void File_CI::rewindDirectory(void) {
+  // File_Base::rewindDirectory();
+}
 
 // =================================================================
 
-bool SDClass_CI::begin(uint8_t csPin) { return SDClass_Base::begin(csPin); }
-
-bool SDClass_CI::begin(uint32_t clock, uint8_t csPin) {
-  return SDClass_Base::begin(clock, csPin);
+bool SDClass_CI::begin(uint8_t csPin) {
+  // return SDClass_Base::begin(csPin);
+  std::cout << "bool SDClass_CI::begin(uint8_t csPin)" << std::endl;
 }
 
-void SDClass_CI::end() { SDClass_Base::end(); }
+bool SDClass_CI::begin(uint32_t clock, uint8_t csPin) {
+  // return SDClass_Base::begin(clock, csPin);
+  std::cout << "bool SDClass_CI::begin(uint32_t clock, uint8_t csPin)" << std::endl;
+}
+
+void SDClass_CI::end() {
+  //  SDClass_Base::end();
+}
 
 File_CI SDClass_CI::open(const char *filename, uint8_t mode) {
   return File_CI(filename, mode);

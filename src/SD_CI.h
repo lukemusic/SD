@@ -11,13 +11,9 @@ namespace SDLib {
 
 class File_CI : public File_Base {
 private:
-  char _name[13]; // our name
-                  //   File_Base *baseFile;
-                  // need a local file reference HERE
   std::fstream *finOut;
-  std::ifstream *fin;
-  int _pos;
-  char _fileName[100];
+  // int _pos;
+  char _path[100];
   uint8_t _mode;
   bool _open;
   bool _isDirectory;
@@ -44,7 +40,7 @@ public:
   bool isOpen() { return _open; }
 
   bool isDirectory(void);
-  File_CI openNextFile(uint8_t mode = O_RDONLY);
+  File_CI openNextFile(uint8_t mode);
   void rewindDirectory(void);
 
   using Print::write;
@@ -74,7 +70,7 @@ public:
   // write, etc). Returns a File object for interacting with the file.
   // Note that currently only one file can be open at a time.
   File_CI open(const char *filename, uint8_t mode);
-  File_CI open(const String &filename, uint8_t mode = O_READ) {
+  File_CI open(const String &filename, uint8_t mode = FILE_READ) {
     return open(filename.c_str(), mode);
   }
 
@@ -110,7 +106,7 @@ extern SDClass_CI sd_ci;
 
 // template <class T> size_t File_CI::write1(T data) {
 //   // return 0 if file is read only
-//   if (_mode == O_READ) {
+//   if (_mode == FILE_READ) {
 //     std::cout << "In read return for some reason" << std::endl;
 //     return 0;
 //   }

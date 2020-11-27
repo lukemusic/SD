@@ -337,6 +337,7 @@ namespace SDLib {
 
 
   bool SDClass_Base::begin(uint8_t csPin) {
+    std::cout << "Hit base begin" << std::endl;
     if (root.isOpen()) {
       root.close();
     }

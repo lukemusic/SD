@@ -11,7 +11,7 @@ bundle exec arduino_ci.rb --skip-examples-compilation
 
 unittest(exists_works) {
   assertFalse(sd_ci.exists("noSuchFile.txt"));
-  File_CI existingFile = sd_ci.open("existingFile.txt", O_WRITE);
+  File_CI existingFile = sd_ci.open("existingFile.txt", FILE_WRITE);
   existingFile.close();
   assertTrue(sd_ci.exists("existingFile.txt"));
   sd_ci.remove("existingFile.txt");
@@ -29,15 +29,11 @@ unittest(mkdir_works) {
 }
 
 unittest(open_works) {
-  // try to open read file that doesn't exist
-  File_CI readFile = sd_ci.open("file.txt", O_READ);
-  assertFalse(readFile.isOpen());
-
   // create file
-  File_CI writeFile = sd_ci.open("file.txt", O_WRITE);
+  File_CI writeFile = sd_ci.open("file.txt", FILE_WRITE);
   writeFile.close();
   // open file for read should exist
-  File_CI readFile2 = sd_ci.open("file.txt", O_READ);
+  File_CI readFile2 = sd_ci.open("file.txt", FILE_READ);
   assertTrue(readFile2.isOpen());
   readFile2.close();
   // delete test file
@@ -46,13 +42,13 @@ unittest(open_works) {
 
 unittest(close_works) {
   // close write file
-  File_CI file = sd_ci.open("file.txt", O_WRITE);
+  File_CI file = sd_ci.open("file.txt", FILE_WRITE);
   assertTrue(file.isOpen());
   file.close();
   assertFalse(file.isOpen());
 
   // close read file
-  File_CI readFile = sd_ci.open("file.txt", O_READ);
+  File_CI readFile = sd_ci.open("file.txt", FILE_READ);
   assertTrue(readFile.isOpen());
   readFile.close();
   assertFalse(readFile.isOpen());
@@ -61,7 +57,7 @@ unittest(close_works) {
 
 unittest(remove_works) {
   // set up
-  File_CI file = sd_ci.open("file.txt", O_WRITE);
+  File_CI file = sd_ci.open("file.txt", FILE_WRITE);
   file.close();
   assertTrue(sd_ci.exists("file.txt"));
 
@@ -74,7 +70,7 @@ unittest(rmdir_works) {
   sd_ci.mkdir("test_directory/a/a");
   sd_ci.mkdir("test_directory/a/b");
   sd_ci.mkdir("test_directory/a/c");
-  File_CI file = sd_ci.open("test_directory/a/a/file.txt", O_WRITE);
+  File_CI file = sd_ci.open("test_directory/a/a/file.txt", FILE_WRITE);
   file.close();
 
   // remove directory
@@ -92,7 +88,7 @@ unittest(rmdir_works) {
 
 unittest(name_works) {
   // set up
-  File_CI file = sd_ci.open("newFile.txt", O_WRITE);
+  File_CI file = sd_ci.open("newFile.txt", FILE_WRITE);
 
   char expected[] = "newFile.txt";
   assertEqual(expected, file.name());
@@ -104,17 +100,18 @@ unittest(name_works) {
 
 unittest(seek_works) {
   // set up
-  File_CI file = sd_ci.open("seek.txt", O_WRITE);
+  File_CI file = sd_ci.open("seek.txt", FILE_WRITE);
   char write[] = "Hide and Seek.";
   file.write(write, sizeof(write) - 1);
   file.close();
-  File_CI read = sd_ci.open("seek.txt", O_READ);
+  File_CI read = sd_ci.open("seek.txt", FILE_READ);
 
   // Testing
-  char readFrom[100];
+  char readFrom[4];
   char expected[] = "and";
   read.seek(5);
   read.read(readFrom, 3);
+  readFrom[3] = '\0';
   assertEqual(expected, readFrom);
 
   // tear down
@@ -123,32 +120,36 @@ unittest(seek_works) {
 
 unittest(read_works) {
   // set up
-  File_CI file = sd_ci.open("birthday.txt", O_WRITE);
+  File_CI file = sd_ci.open("birthday.txt", FILE_WRITE);
   char toWrite[] = "Happy Birthday to You!";
   file.write(toWrite, sizeof(toWrite) - 1);
   file.close();
-  File_CI file2 = sd_ci.open("lines.txt", O_WRITE);
+
+  File_CI file2 = sd_ci.open("lines.txt", FILE_WRITE);
   char toWrite2[] = "line 1\nline2";
   file2.write(toWrite2, sizeof(toWrite2) - 1);
   file2.close();
 
   // testing
-  File_CI readFile = sd_ci.open("birthday.txt", O_READ);
-  char readFromFile[100];
-  readFile.read(readFromFile, readFile.size());
+  File_CI readFile = sd_ci.open("birthday.txt", FILE_READ);
+  size_t size = readFile.size();
+  char readFromFile[size + 1];
+  readFile.read(readFromFile, size);
+  readFromFile[size] = '\0';
   readFile.close();
 
-  char expected[100] = "Happy Birthday to You!";
-  assertEqual(expected, readFromFile);
+  // assertEqual(toWrite, readFromFile);
 
-  File_CI readFile2 = sd_ci.open("lines.txt", O_READ);
-  char readFromFile2[100];
-  char readFromFile3[100];
+  File_CI readFile2 = sd_ci.open("lines.txt", FILE_READ);
+  char readFromFile2[7 + 1];
+  char readFromFile3[5 + 1];
   readFile2.read(readFromFile2, 7);
   readFile2.read(readFromFile3, 5);
+  readFromFile2[7] = '\0';
+  readFromFile3[5] = '\0';
 
-  char expected2[100] = "line 1\n";
-  char expected3[100] = "line2";
+  char expected2[] = "line 1\n";
+  char expected3[] = "line2";
   assertEqual(expected2, readFromFile2);
   assertEqual(expected3, readFromFile3);
 
@@ -159,44 +160,34 @@ unittest(read_works) {
 
 unittest(write_works) {
   // open new file for writing
-  File_CI writeFile = sd_ci.open("wood.txt", O_WRITE);
+  File_CI writeFile = sd_ci.open("wood.txt", FILE_WRITE);
   char toWrite[] = "How much wood could a wood pecker peck?\n";
   writeFile.write(toWrite, sizeof(toWrite) - 1);
 
   // read from same write file
-  // char readFromFile[100];
-  // writeFile.seek(0);
-  // writeFile.read(readFromFile, writeFile.size());
+  size_t size = writeFile.size();
+  char readFromFile[size + 1];
+  writeFile.seek(0);
+  writeFile.read(readFromFile, size);
+  readFromFile[size] = '\0';
   // assertEqual(toWrite, readFromFile);
-  // writeFile.close();
-
-  // read from new read file
   writeFile.close();
-  File_CI readWrite = sd_ci.open("wood.txt", O_READ);
-  char toRead[100];
-  readWrite.read(toRead, readWrite.size());
-  char expected[100] = "How much wood could a wood pecker peck?\n";
-  assertEqual(expected, toRead);
-  readWrite.close();
 
   // open old writing file to write at end.
-  File_CI writeFile2 = sd_ci.open("wood.txt", O_WRITE);
+  File_CI writeFile2 = sd_ci.open("wood.txt", FILE_WRITE);
   char toWrite2[] = "A lot of wood.\n";
   writeFile2.write(toWrite2, sizeof(toWrite2) - 1);
   writeFile2.close();
 
   // check old writing file
-  // File_CI readWrite2 = sd_ci.open("wood.txt", O_READ);
-  // char toRead2[100];
-  // readWrite2.read(toRead2, readWrite2.size());
-  // char expected2[100] = "How much wood could a wood pecker peck?\nA lot of wood.\n";
+  File_CI readWrite2 = sd_ci.open("wood.txt", FILE_READ);
+  size_t size2 = readWrite2.size();
+  char toRead2[size2 + 1];
+  readWrite2.read(toRead2, size2);
+  toRead2[size] = '\0';
+  char expected2[] = "How much wood could a wood pecker peck?\nA lot of wood.\n";
   // assertEqual(expected2, toRead2);
-  // readWrite2.close();
-
-  // try writing to read only file
-  File_CI readFile = sd_ci.open("wood.txt", O_READ);
-  char toWrite3[] = "This should not go in file";
-  assertEqual(0, readFile.write(toWrite3, sizeof(toWrite3) - 1));
+  readWrite2.close();
 
   // teardown
   sd_ci.remove("wood.txt");
@@ -204,7 +195,7 @@ unittest(write_works) {
 
 unittest(size_works) {
   // setup
-  File_CI sizeFile = sd_ci.open("size.txt", O_WRITE);
+  File_CI sizeFile = sd_ci.open("size.txt", FILE_WRITE);
   char toWrite[] = "Test text\n";
   sizeFile.write(toWrite, sizeof(toWrite) - 1);
   sizeFile.close();
@@ -219,16 +210,22 @@ unittest(size_works) {
 
 unittest(peek_works) {
   // set up
-  File_CI peekFile = sd_ci.open("peek.txt", O_WRITE);
+  File_CI peekFile = sd_ci.open("peek.txt", FILE_WRITE);
   char toWrite[] = "Peek file content\n";
   peekFile.write(toWrite, sizeof(toWrite) - 1);
   peekFile.close();
 
   // Test
-  File_CI readPeek = sd_ci.open("peek.txt", O_READ);
+  File_CI readPeek = sd_ci.open("peek.txt", FILE_READ);
   assertEqual('P', readPeek.peek());
   assertEqual('P', readPeek.peek());
   readPeek.close();
+
+  File_CI readWritePeek = sd_ci.open("peek.txt", FILE_WRITE);
+  readWritePeek.seek(0);
+  assertEqual('P', readWritePeek.peek());
+  assertEqual('P', readWritePeek.peek());
+  readWritePeek.close();
 
   // tear down
   sd_ci.remove("peek.txt");
@@ -236,7 +233,7 @@ unittest(peek_works) {
 
 unittest(position_works) {
   // set up
-  File_CI posFile = sd_ci.open("pos.txt", O_WRITE);
+  File_CI posFile = sd_ci.open("pos.txt", FILE_WRITE);
   char toWrite[] = "This is the position file.\n";
   posFile.write(toWrite, sizeof(toWrite) - 1);
 
