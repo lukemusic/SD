@@ -59,7 +59,7 @@
 
   #include <Arduino.h>
 
-  #ifdef MOCK_PINS_COUNT
+  #ifdef ARDUINO_CI
     #define SDCARD_SS_PIN    4
     #define SDCARD_MOSI_PIN 11
     #define SDCARD_MISO_PIN 12
